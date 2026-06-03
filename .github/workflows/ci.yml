@@ -1,0 +1,35 @@
+# ┌───────────────────────────────────────────────────────────┐
+# │ ci.yml — CI(자동 검증). GitHub Actions가 실행한다.          │
+# │ 코드를 GitHub에 올릴(push) 때마다 자동으로:                  │
+# │   1) 백엔드 테스트가 통과하는지                               │
+# │   2) Docker 이미지가 잘 빌드되는지   를 확인한다.             │
+# │ → 깨진 코드가 배포되는 걸 미리 막는다.                        │
+# └───────────────────────────────────────────────────────────┘
+name: CI
+
+on:                      # 언제 실행할지
+  push:
+    branches: [main]     # main 브랜치에 올릴 때
+  pull_request:          # PR(코드 합치기 요청)이 올라올 때
+
+jobs:                    # 실행할 작업 목록 (job은 병렬로 돈다)
+  test:                  # ① 단위 테스트
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install backend deps
+        working-directory: backend
+        run: npm install
+      - name: Run unit tests
+        working-directory: backend
+        run: npm test
+
+  docker-build:          # ② 도커 이미지 빌드 확인
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build all images
+        run: docker compose build

@@ -1,0 +1,14 @@
+{
+  "name": "budget",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "comment": "이 루트 package.json은 Vercel 서버리스 함수(api/)가 쓰는 의존성 목록입니다. 로컬 도커 실행에는 backend/package.json을 씁니다.",
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  }
+}
