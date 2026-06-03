@@ -42,11 +42,11 @@ body {
 
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 20px; max-width: 880px; margin: 0 auto;
+  padding: 16px 20px; max-width: 1140px; margin: 0 auto;
 }
 .topbar h1 { font-size: 1.4rem; margin: 0; }
 
-.content { max-width: 880px; margin: 0 auto 40px; padding: 0 20px; }
+.content { max-width: 1140px; margin: 0 auto 40px; padding: 0 20px; }
 .section-title { font-size: 1.0rem; margin: 24px 0 8px; color: var(--muted); }
 
 /* 월 바 + 큰 총액 */
@@ -209,9 +209,10 @@ input, select {
 }
 
 /* ── 달력 + 패널 2단 배치 (스크롤 최소화) ────────────── */
+/* 달력 칸의 금액(예: +2,500,000)이 잘리지 않도록 달력 쪽 비중을 키운다 */
 .day-layout {
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
+  grid-template-columns: 1.9fr 1fr;
   gap: 16px;
   align-items: start;
   margin-top: 14px;
