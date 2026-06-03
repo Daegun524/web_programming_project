@@ -14,6 +14,7 @@
   --primary-text: #ffffff;
   --accent: #ef4444; /* 지출(돈 나감) 강조색 */
   --income: #16a34a; /* 수입(돈 들어옴) 강조색 (초록) */
+  --cal-income: #2563eb; /* 달력 칸의 수입(+) 표시색 (파랑) */
 }
 
 :root[data-theme="dark"] {
@@ -26,6 +27,7 @@
   --primary-text: #16181d;
   --accent: #f87171;
   --income: #4ade80; /* 다크 테마 수입 색 */
+  --cal-income: #60a5fa; /* 다크 테마 달력 수입(+) 색 (밝은 파랑) */
 }
 
 * { box-sizing: border-box; }
@@ -177,15 +179,26 @@ input, select {
 .cal-cell:hover { border-color: var(--primary); }
 .cal-cell.empty { border: none; background: transparent; cursor: default; } /* 1일 앞 빈칸 */
 .cal-day { font-size: 0.8rem; color: var(--muted); }
+/* 일별 합계 묶음 — 칸 맨 아래에 지출(-)·수입(+) 두 줄을 모아 둔다.
+   margin-top:auto 를 이 묶음에만 주면(개별 줄이 아니라) 두 줄이 함께 바닥에 붙는다. */
+.cal-amounts {
+  margin-top: auto;
+  display: flex; flex-direction: column; gap: 1px;
+  min-width: 0; max-width: 100%;
+}
 /* 일별 지출 합계: 회색 + 살짝 불투명하게(은은하게).
    폰트를 작게 해서 '-1,000,000'(100만원 단위, 10자)까지 한 줄에 다 보이게 한다.
    그보다 더 길면 한 줄로 두고 뒤를 …로 자른다.
    max-width:100% + overflow:hidden 이 있어야 ellipsis(…)가 동작한다. */
 .cal-amount {
-  margin-top: auto; font-size: 0.6rem; font-weight: 600;
+  font-size: 0.6rem; font-weight: 600;
   color: var(--muted); opacity: 0.7; letter-spacing: -0.4px;
   max-width: 100%;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* 수입(+) 줄은 파란색으로 또렷하게 — 지출 줄과 한눈에 구분 */
+.cal-amount.income {
+  color: var(--cal-income); opacity: 1;
 }
 /* 오늘 날짜 칸 강조 */
 .cal-cell.today .cal-day { color: var(--primary); font-weight: 700; }

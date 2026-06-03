@@ -8,7 +8,7 @@
 // │  → 같은 데이터를 두 가지 화면(목록/달력)으로 재활용한다.     │
 // └─────────────────────────────────────────────────────────┘
 import { useMemo } from "react";
-import { wonCal, daysInMonth, firstWeekday, todayOfMonth } from "../format.js";
+import { wonCal, wonCalIncome, daysInMonth, firstWeekday, todayOfMonth } from "../format.js";
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -16,9 +16,10 @@ const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 //   month      : "2026-06"
 //   expenses   : 일회성 지출 배열 (각 항목에 spent_on "YYYY-MM-DD", amount)
 //   recurring  : 정기 지출 배열 (각 항목에 day_of_month, amount)
+//   incomes    : 수입 배열 (각 항목에 received_on "YYYY-MM-DD", amount)
 //   selectedDay: 지금 선택된 날짜(1~31). 칸을 강조 표시한다.
 //   onPickDay  : 특정 날짜 칸을 눌렀을 때 실행 (그 날짜를 선택)
-export default function Calendar({ month, expenses, recurring, selectedDay, onPickDay }) {
+export default function Calendar({ month, expenses, recurring, incomes = [], selectedDay, onPickDay }) {
   const total = daysInMonth(month); // 그 달 날짜 수 (28~31)
   const lead = firstWeekday(month); // 1일 앞에 비워둘 칸 수 (요일 맞추기)
   const today = todayOfMonth(month); // 이번 달이면 오늘 날짜, 아니면 null
@@ -42,6 +43,17 @@ export default function Calendar({ month, expenses, recurring, selectedDay, onPi
     return sums;
   }, [expenses, recurring, total]);
 
+  // [파생 상태] day(1~31) → 그날 수입 합계. (지출과 같은 방식, 따로 모은다)
+  const dailyIncome = useMemo(() => {
+    const sums = {}; // { 25: 2500000, ... }
+    for (const i of incomes) {
+      const day = Number(i.received_on.slice(8, 10));
+      if (day < 1 || day > total) continue;
+      sums[day] = (sums[day] || 0) + i.amount;
+    }
+    return sums;
+  }, [incomes, total]);
+
   // 격자에 깔 칸 목록: 앞 빈칸(lead개) + 1..total일
   const cells = [];
   for (let i = 0; i < lead; i++) cells.push(null); // 빈 칸
@@ -62,7 +74,8 @@ export default function Calendar({ month, expenses, recurring, selectedDay, onPi
       <div className="cal-grid">
         {cells.map((day, idx) => {
           if (day === null) return <div key={`b${idx}`} className="cal-cell empty" />;
-          const sum = dailyTotal[day];
+          const sum = dailyTotal[day]; // 그날 지출 합계
+          const inc = dailyIncome[day]; // 그날 수입 합계
           const isToday = day === today;
           const isSelected = day === selectedDay;
           return (
@@ -74,7 +87,13 @@ export default function Calendar({ month, expenses, recurring, selectedDay, onPi
               aria-pressed={isSelected}
             >
               <span className="cal-day">{day}</span>
-              {sum ? <span className="cal-amount">{wonCal(sum)}</span> : null}
+              {/* 칸 맨 아래: 지출(-, 회색) 위에 수입(+, 파란색)을 한 줄씩 */}
+              {(sum || inc) ? (
+                <span className="cal-amounts">
+                  {sum ? <span className="cal-amount">{wonCal(sum)}</span> : null}
+                  {inc ? <span className="cal-amount income">{wonCalIncome(inc)}</span> : null}
+                </span>
+              ) : null}
             </button>
           );
         })}

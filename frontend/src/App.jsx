@@ -127,6 +127,7 @@ export default function App() {
             month={d.month}
             expenses={d.expenses}
             recurring={d.recurring}
+            incomes={d.incomes}
             selectedDay={selectedDay}
             onPickDay={setSelectedDay}
           />

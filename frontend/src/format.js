@@ -23,6 +23,12 @@ export function wonCal(n) {
   return "-" + (n ?? 0).toLocaleString("ko-KR");
 }
 
+// 달력 칸용 수입 — 앞에 '+'(수입=돈 들어옴)를 붙인다.
+//  예: 2,500,000 → "+2,500,000"  (지출 줄과 한눈에 구분됨)
+export function wonCalIncome(n) {
+  return "+" + (n ?? 0).toLocaleString("ko-KR");
+}
+
 // "2026-06" → "2026년 6월" 처럼 사람이 읽기 좋게
 export function monthLabel(month) {
   const [y, m] = month.split("-");
